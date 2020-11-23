@@ -1,0 +1,78 @@
+#include < EEPROM .h>
+
+Commande de chaîne;
+
+void setup() {
+  
+  Série .begin (9600);
+  
+}
+
+boucle void () {
+
+  if ( Serial .available ()> 0) {
+    
+    command = Serial .readStringUntil ('\ n');
+    String commandRead = commande;
+    String commandWrite = commande;
+    String sRead = "lire";
+    String sWrite = "écrire";
+    commandRead.remove (4);
+    commandWrite.remove (5);
+
+    if (commandRead.equals (sRead)) {
+      
+      Chaîne sreadArg1 = command.substring (5);
+      
+      int readArg1 = sreadArg1.toInt ();
+      
+      if (readArg1> 1023 || readArg1 <0) {
+        
+        Serial .println ("Non valide, veuillez saisir une valeur comprise entre 1 et 1023");
+      
+      }
+
+      autre { 
+        int valueEEP = EEPROM .read (readArg1); 
+        Serial .print ("La valeur est");
+        Serial .println (valeurEEP, DEC);
+      }
+    }
+
+    if (commandWrite.equals (sWrite)) { 
+      
+      String swriteArgs = commande;
+      
+      swriteArgs.remove (0, 6);
+      
+      int swriteSpace = swriteArgs.indexOf ('');
+      
+      Chaîne swriteArg1 = swriteArgs.substring (0, swriteSpace);
+      
+      int writeArg1 = swriteArg1.toInt (); 
+      
+      Chaîne swriteArg2 = swriteArgs.substring (swriteSpace + 1); 
+      
+      int writeArg2 = swriteArg2.toInt (); 
+
+      if (writeArg1 <0 || writeArg1> 1023 || writeArg2 <0 || writeArg2> 255) {
+        
+        Serial .println ("Invalid, enter a first number from 0 to 1023 and the second number from 0 to 255");
+        
+      }
+
+      autre { 
+        byte byte1Arg2 = writeArg2 & 0XFF;
+        
+        byte byte2Arg2 = (writeArg2 >> 8) & 0XFF;
+        
+        EEPROM .write (writeArg1, byte1Arg2);
+        
+        EEPROM .write (writeArg1 + 1, byte2Arg2);
+        
+        Serial .println ("Succès!");
+        
+   }
+  }
+ }
+}
